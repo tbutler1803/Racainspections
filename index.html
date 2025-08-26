@@ -47,11 +47,20 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Custom message box */
+        #messageBox {
+            transition: opacity 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div id="loader"></div>
+
+    <!-- Custom Message Box -->
+    <div id="messageBox" class="fixed top-5 right-5 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 hidden">
+        <p id="messageText"></p>
+    </div>
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <header class="flex flex-col sm:flex-row justify-between items-center mb-6">
@@ -135,7 +144,7 @@
         </div>
     </div>
 
-    <!-- NEW: Confirmation Modal for Delete -->
+    <!-- Confirmation Modal for Delete -->
     <div id="confirmDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
             <h3 class="text-lg font-semibold mb-4">Confirm Deletion</h3>
@@ -171,6 +180,8 @@
         currentDate.setDate(1);
 
         const loader = document.getElementById('loader');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
         const calendarDays = document.getElementById('calendarDays');
         const currentMonthYear = document.getElementById('currentMonthYear');
         const prevMonthBtn = document.getElementById('prevMonth');
@@ -255,13 +266,38 @@
         inspectionForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitButton = e.target.querySelector('button[type="submit"]');
+            const date = document.getElementById('inspectionDate').value;
+
+            if (!date) {
+                showMessage("Please select a date.");
+                return;
+            }
+
             submitButton.disabled = true;
             submitButton.textContent = 'Saving...';
-            const [date, equipment, issue, photoFile] = [inspectionDate.value, equipmentName.value, issueDescription.value, fileUploadInput.files[0]];
-            let photoUrl = photoFile ? await toBase64(photoFile) : '';
+            
+            const equipment = document.getElementById('equipmentName').value;
+            const issue = document.getElementById('issueDescription').value;
+            const photoFile = fileUploadInput.files[0];
+
+            const inspectionData = {
+                date,
+                equipment,
+                issue,
+                photoUrl: ''
+            };
+
+            if (photoFile) {
+                inspectionData.photoUrl = await toBase64(photoFile);
+            }
+
             try {
-                await addDoc(collection(db, "inspections"), { date, equipment, issue, photoUrl });
-            } catch (error) { console.error("Error writing document: ", error); }
+                await addDoc(collection(db, "inspections"), inspectionData);
+            } catch (error) { 
+                console.error("Error writing document: ", error);
+                showMessage("Failed to save inspection.");
+            }
+            
             submitButton.disabled = false;
             submitButton.textContent = 'Save';
             closeModal();
@@ -290,10 +326,11 @@
 
         function openModal() {
             inspectionModal.classList.remove('hidden');
-            setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); }, 10);
+            setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); modalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
         function closeModal() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 inspectionModal.classList.add('hidden');
@@ -322,23 +359,35 @@
         }
 
         function showInspectionDetails(inspection) {
-            viewEquipmentName.textContent = inspection.equipment;
-            viewInspectionDate.textContent = `Reported on: ${inspection.date}`;
-            viewIssueDescription.textContent = inspection.issue;
-            viewInspectionPhoto.src = inspection.photoUrl || '';
-            viewInspectionPhoto.style.display = inspection.photoUrl ? 'block' : 'none';
+            document.getElementById('viewEquipmentName').textContent = inspection.equipment;
+            document.getElementById('viewInspectionDate').textContent = `Reported on: ${inspection.date}`;
+            document.getElementById('viewIssueDescription').textContent = inspection.issue;
+            const photoElement = document.getElementById('viewInspectionPhoto');
+            photoElement.src = inspection.photoUrl || '';
+            photoElement.style.display = inspection.photoUrl ? 'block' : 'none';
             deleteInspectionBtn.dataset.id = inspection.id;
             openViewModal();
         }
 
         function openViewModal() {
             viewInspectionModal.classList.remove('hidden');
-            setTimeout(() => { viewModalContent.classList.remove('scale-95', 'opacity-0'); }, 10);
+            setTimeout(() => { viewModalContent.classList.remove('scale-95', 'opacity-0'); viewModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
         }
 
         function closeViewModal() {
+            viewModalContent.classList.remove('scale-100', 'opacity-100');
             viewModalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => { viewInspectionModal.classList.add('hidden'); }, 200);
+        }
+
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden');
+            setTimeout(() => messageBox.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                messageBox.classList.add('opacity-0');
+                setTimeout(() => messageBox.classList.add('hidden'), 300);
+            }, 3000);
         }
 
         const toBase64 = file => new Promise((resolve, reject) => {
