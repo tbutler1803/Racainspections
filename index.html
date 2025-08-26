@@ -47,13 +47,18 @@
         #messageBox {
             transition: opacity 0.3s ease-in-out;
         }
+        /* NEW: Custom smaller text for calendar events */
+        .event-text {
+            font-size: 0.65rem; /* 10.4px */
+            line-height: 0.85rem; /* 13.6px */
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div id="loader"></div>
 
-    <div id="messageBox" class="fixed top-5 right-5 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 hidden">
+    <div id="messageBox" class="fixed top-5 right-5 bg-red-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 hidden z-50">
         <p id="messageText"></p>
     </div>
 
@@ -63,22 +68,17 @@
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Inspection Calendar</h1>
                 <p class="text-gray-600">Royal Automobile Club of Australia</p>
             </div>
-            <button id="addInspectionBtn" class="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+            <button id="addInspectionBtn" class="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md">
                 Add New Inspection
             </button>
         </header>
 
         <div class="bg-white rounded-lg shadow-lg p-4">
             <div class="flex justify-between items-center mb-4">
-                <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
+                <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-200"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
                 <h2 id="currentMonthYear" class="text-xl font-semibold"></h2>
-                <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </button>
+                <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-200"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
             </div>
-
             <div class="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200 text-xs sm:text-sm">
                 <div class="text-center font-semibold py-2 bg-gray-50">Sun</div>
                 <div class="text-center font-semibold py-2 bg-gray-50">Mon</div>
@@ -94,21 +94,21 @@
 
     <!-- Add/Edit Modal -->
     <div id="inspectionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg transform transition-all scale-95 opacity-0" id="modal-content">
+        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg transform transition-all scale-95" id="modal-content">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-2xl font-semibold">Add Inspection Details</h3>
                 <button id="closeModal" class="text-gray-500 hover:text-gray-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             <form id="inspectionForm">
-                <div class="mb-4"><label for="inspectionDate" class="block text-gray-700 text-sm font-bold mb-2">Date</label><input type="date" id="inspectionDate" class="custom-date-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></div>
-                <div class="mb-4"><label for="equipmentName" class="block text-gray-700 text-sm font-bold mb-2">Equipment / Area</label><input type="text" id="equipmentName" placeholder="e.g., Kitchen Vent Hood" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></div>
-                <div class="mb-4"><label for="issueDescription" class="block text-gray-700 text-sm font-bold mb-2">Issue Description</label><textarea id="issueDescription" placeholder="Describe the fault..." rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:focus:shadow-outline"></textarea></div>
+                <div class="mb-4"><label for="inspectionDate" class="block text-gray-700 text-sm font-bold mb-2">Date</label><input type="date" id="inspectionDate" class="custom-date-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" required></div>
+                <div class="mb-4"><label for="equipmentName" class="block text-gray-700 text-sm font-bold mb-2">Equipment / Area</label><input type="text" id="equipmentName" placeholder="e.g., Kitchen Vent Hood" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700" required></div>
+                <div class="mb-4"><label for="issueDescription" class="block text-gray-700 text-sm font-bold mb-2">Issue Description</label><textarea id="issueDescription" placeholder="Describe the fault..." rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"></textarea></div>
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Upload Photo</label>
-                    <div id="file-dropzone" class="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div class="relative mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div id="file-dropzone-placeholder" class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                            <div class="flex text-sm text-gray-600"><label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500"><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*"></label><p class="pl-1">or drag and drop</p></div>
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                            <div class="flex text-sm text-gray-600"><label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500"><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*" capture="environment"></label><p class="pl-1">or drag and drop</p></div>
                             <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                         </div>
                         <div id="file-preview-wrapper" class="hidden w-full"></div>
@@ -121,7 +121,7 @@
     
     <!-- View Details Modal -->
     <div id="viewInspectionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg transform transition-all scale-95 opacity-0" id="view-modal-content">
+        <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-lg transform transition-all scale-95" id="view-modal-content">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-2xl font-semibold">Inspection Details</h3>
                 <button id="closeViewModal" class="text-gray-500 hover:text-gray-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -131,7 +131,7 @@
                 <div class="mb-4"><p class="text-gray-700" id="viewIssueDescription"></p></div>
                 <div><img id="viewInspectionPhoto" src="" alt="Inspection Photo" class="rounded-lg w-full h-auto object-cover" onerror="this.style.display='none'"></div>
             </div>
-            <div class="flex justify-end mt-6 pt-4 border-t"><button id="deleteInspectionBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Delete Inspection</button></div>
+            <div class="flex justify-end mt-6 pt-4 border-t"><button id="deleteInspectionBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Delete</button></div>
         </div>
     </div>
 
@@ -147,11 +147,9 @@
         </div>
     </div>
 
-    <!-- Import Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        // NEW: Import Firebase Storage
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
@@ -165,35 +163,35 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app); // NEW: Initialize Storage
+        const storage = getStorage(app);
 
         let inspections = {};
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         let currentDate = new Date();
         currentDate.setDate(1);
 
-        const loader = document.getElementById('loader');
-        const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-        const calendarDays = document.getElementById('calendarDays');
-        const currentMonthYear = document.getElementById('currentMonthYear');
-        const prevMonthBtn = document.getElementById('prevMonth');
-        const nextMonthBtn = document.getElementById('nextMonth');
-        const addInspectionBtn = document.getElementById('addInspectionBtn');
-        const inspectionModal = document.getElementById('inspectionModal');
-        const modalContent = document.getElementById('modal-content');
-        const closeModalBtn = document.getElementById('closeModal');
-        const inspectionForm = document.getElementById('inspectionForm');
-        const fileUploadInput = document.getElementById('file-upload');
-        const dropzonePlaceholder = document.getElementById('file-dropzone-placeholder');
-        const previewWrapper = document.getElementById('file-preview-wrapper');
-        const viewInspectionModal = document.getElementById('viewInspectionModal');
-        const viewModalContent = document.getElementById('view-modal-content');
-        const closeViewModalBtn = document.getElementById('closeViewModal');
-        const deleteInspectionBtn = document.getElementById('deleteInspectionBtn');
-        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const allDOMElements = {
+            loader: document.getElementById('loader'),
+            messageBox: document.getElementById('messageBox'),
+            messageText: document.getElementById('messageText'),
+            calendarDays: document.getElementById('calendarDays'),
+            currentMonthYear: document.getElementById('currentMonthYear'),
+            addInspectionBtn: document.getElementById('addInspectionBtn'),
+            inspectionModal: document.getElementById('inspectionModal'),
+            modalContent: document.getElementById('modal-content'),
+            closeModalBtn: document.getElementById('closeModal'),
+            inspectionForm: document.getElementById('inspectionForm'),
+            fileUploadInput: document.getElementById('file-upload'),
+            dropzonePlaceholder: document.getElementById('file-dropzone-placeholder'),
+            previewWrapper: document.getElementById('file-preview-wrapper'),
+            viewInspectionModal: document.getElementById('viewInspectionModal'),
+            viewModalContent: document.getElementById('view-modal-content'),
+            closeViewModalBtn: document.getElementById('closeViewModal'),
+            deleteInspectionBtn: document.getElementById('deleteInspectionBtn'),
+            confirmDeleteModal: document.getElementById('confirmDeleteModal'),
+            cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
+            confirmDeleteBtn: document.getElementById('confirmDeleteBtn')
+        };
 
         onSnapshot(collection(db, "inspections"), (snapshot) => {
             const allInspections = [];
@@ -205,38 +203,38 @@
                 return acc;
             }, {});
             renderCalendar();
-            loader.style.display = 'none';
+            allDOMElements.loader.style.display = 'none';
         });
 
         function renderCalendar() {
+            const { calendarDays, currentMonthYear } = allDOMElements;
             calendarDays.innerHTML = '';
             const month = currentDate.getMonth();
             const year = currentDate.getFullYear();
             currentMonthYear.textContent = `${monthNames[month]} ${year}`;
             const firstDayOfMonth = new Date(year, month, 1).getDay();
             const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-            for (let i = 0; i < firstDayOfMonth; i++) calendarDays.appendChild(document.createElement('div')).classList.add('bg-white', 'p-2', 'border-t', 'border-l', 'border-gray-200');
+            for (let i = 0; i < firstDayOfMonth; i++) calendarDays.appendChild(document.createElement('div')).classList.add('bg-white', 'p-2', 'border');
             for (let i = 1; i <= lastDateOfMonth; i++) {
                 const dayCell = document.createElement('div');
-                dayCell.classList.add('day', 'bg-white', 'p-2', 'border-t', 'border-l', 'border-gray-200', 'relative', 'flex', 'flex-col');
+                dayCell.className = 'day bg-white p-2 border relative flex flex-col';
                 const dayNumber = document.createElement('span');
                 dayNumber.textContent = i;
-                dayNumber.classList.add('font-medium', 'text-xs', 'sm:text-base');
+                dayNumber.className = 'font-medium text-xs sm:text-base';
                 const today = new Date();
                 if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    dayNumber.classList.add('bg-blue-600', 'text-white', 'rounded-full', 'w-6', 'h-6', 'sm:w-8', 'sm:h-8', 'flex', 'items-center', 'justify-center');
-                } else {
-                    dayNumber.classList.add('text-gray-700');
+                    dayNumber.className += ' bg-blue-600 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center';
                 }
                 dayCell.appendChild(dayNumber);
                 const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 if (inspections[dateString]) {
                     const eventsContainer = document.createElement('div');
-                    eventsContainer.classList.add('mt-1', 'space-y-1', 'overflow-y-auto', 'flex-grow');
+                    eventsContainer.className = 'mt-1 space-y-1 overflow-y-auto flex-grow';
                     inspections[dateString].forEach((inspection) => {
                         const eventPill = document.createElement('div');
                         eventPill.textContent = inspection.equipment;
-                        eventPill.classList.add('bg-red-100', 'text-red-800', 'text-xs', 'font-semibold', 'px-2', 'py-1', 'rounded-full', 'truncate', 'cursor-pointer', 'hover:bg-red-200');
+                        // MODIFIED: Removed 'truncate', added 'whitespace-normal', and used custom 'event-text' class
+                        eventPill.className = 'bg-red-100 text-red-800 font-semibold px-2 py-1 rounded-md whitespace-normal cursor-pointer hover:bg-red-200 event-text';
                         eventPill.title = inspection.issue;
                         eventPill.addEventListener('click', (e) => { e.stopPropagation(); showInspectionDetails(inspection); });
                         eventsContainer.appendChild(eventPill);
@@ -247,47 +245,41 @@
             }
         }
 
-        prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
-        nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
-        addInspectionBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        inspectionModal.addEventListener('click', (e) => { if (e.target === inspectionModal) closeModal(); });
+        document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+        document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+        allDOMElements.addInspectionBtn.addEventListener('click', () => openModal(allDOMElements.inspectionModal));
+        allDOMElements.closeModalBtn.addEventListener('click', () => closeModal(allDOMElements.inspectionModal));
+        allDOMElements.inspectionModal.addEventListener('click', (e) => { if (e.target === allDOMElements.inspectionModal) closeModal(allDOMElements.inspectionModal); });
         
-        // --- UPDATED: Form Submission Logic with Firebase Storage ---
-        inspectionForm.addEventListener('submit', async function(e) {
+        allDOMElements.inspectionForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            const date = document.getElementById('inspectionDate').value;
-            if (!date) {
-                showMessage("Please select a date.");
-                return;
-            }
-            submitButton.disabled = true;
-            submitButton.textContent = 'Saving...';
+            const { inspectionForm, fileUploadInput } = allDOMElements;
+            const submitButton = inspectionForm.querySelector('button[type="submit"]');
+            const date = inspectionForm.querySelector('#inspectionDate').value;
+            if (!date) { showMessage("Please select a date."); return; }
             
-            const equipment = document.getElementById('equipmentName').value;
-            const issue = document.getElementById('issueDescription').value;
+            submitButton.disabled = true;
             const photoFile = fileUploadInput.files[0];
-            let photoUrl = '';
-
+            
             try {
-                // Step 1: Upload photo to Firebase Storage if it exists
+                let photoUrl = '';
                 if (photoFile) {
+                    submitButton.textContent = 'Uploading...';
                     const uniqueFileName = Date.now() + '-' + photoFile.name;
                     const storageRef = ref(storage, `inspections/${uniqueFileName}`);
                     const uploadResult = await uploadBytes(storageRef, photoFile);
                     photoUrl = await getDownloadURL(uploadResult.ref);
                 }
-
-                // Step 2: Save inspection data (with photo URL) to Firestore
+                
+                submitButton.textContent = 'Saving...';
                 await addDoc(collection(db, "inspections"), {
                     date,
-                    equipment,
-                    issue,
-                    photoUrl // This is now a URL string, not the full image data
+                    equipment: inspectionForm.querySelector('#equipmentName').value,
+                    issue: inspectionForm.querySelector('#issueDescription').value,
+                    photoUrl
                 });
                 
-                closeModal();
+                closeModal(allDOMElements.inspectionModal);
 
             } catch (error) { 
                 console.error("Error saving inspection: ", error);
@@ -298,74 +290,66 @@
             }
         });
 
-        fileUploadInput.addEventListener('change', () => updateFilePreview(fileUploadInput.files[0]));
-        deleteInspectionBtn.addEventListener('click', () => {
-            confirmDeleteModal.classList.remove('hidden');
-            confirmDeleteBtn.dataset.id = deleteInspectionBtn.dataset.id;
+        allDOMElements.fileUploadInput.addEventListener('change', () => updateFilePreview(allDOMElements.fileUploadInput.files[0]));
+        allDOMElements.deleteInspectionBtn.addEventListener('click', () => {
+            openModal(allDOMElements.confirmDeleteModal);
+            allDOMElements.confirmDeleteBtn.dataset.id = allDOMElements.deleteInspectionBtn.dataset.id;
         });
-        cancelDeleteBtn.addEventListener('click', () => confirmDeleteModal.classList.add('hidden'));
-        confirmDeleteBtn.addEventListener('click', async () => {
-            const inspectionId = confirmDeleteBtn.dataset.id;
+        allDOMElements.cancelDeleteBtn.addEventListener('click', () => closeModal(allDOMElements.confirmDeleteModal));
+        allDOMElements.confirmDeleteBtn.addEventListener('click', async () => {
+            const inspectionId = allDOMElements.confirmDeleteBtn.dataset.id;
             try {
                 await deleteDoc(doc(db, "inspections", inspectionId));
-                closeViewModal();
+                closeModal(allDOMElements.viewInspectionModal);
             } catch (error) { console.error("Error removing document: ", error); }
-            confirmDeleteModal.classList.add('hidden');
+            closeModal(allDOMElements.confirmDeleteModal);
         });
-        closeViewModalBtn.addEventListener('click', closeViewModal);
-        viewInspectionModal.addEventListener('click', (e) => { if (e.target === viewInspectionModal) closeViewModal(); });
+        allDOMElements.closeViewModalBtn.addEventListener('click', () => closeModal(allDOMElements.viewInspectionModal));
+        allDOMElements.viewInspectionModal.addEventListener('click', (e) => { if (e.target === allDOMElements.viewInspectionModal) closeModal(allDOMElements.viewInspectionModal); });
 
-        function openModal() {
-            inspectionModal.classList.remove('hidden');
-            setTimeout(() => { modalContent.classList.remove('scale-95', 'opacity-0'); modalContent.classList.add('scale-100', 'opacity-100'); }, 10);
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.querySelector('.transform').classList.add('scale-100'), 10);
         }
-        function closeModal() {
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
+        function closeModal(modal) {
+            modal.querySelector('.transform').classList.remove('scale-100');
             setTimeout(() => {
-                inspectionModal.classList.add('hidden');
-                inspectionForm.reset();
-                fileUploadInput.value = '';
-                updateFilePreview(null);
+                modal.classList.add('hidden');
+                if (modal === allDOMElements.inspectionModal) {
+                    allDOMElements.inspectionForm.reset();
+                    allDOMElements.fileUploadInput.value = '';
+                    updateFilePreview(null);
+                }
             }, 200);
         }
         function updateFilePreview(file) {
+            const { dropzonePlaceholder, previewWrapper, fileUploadInput } = allDOMElements;
             if (file) {
                 dropzonePlaceholder.classList.add('hidden');
                 previewWrapper.classList.remove('hidden');
-                previewWrapper.innerHTML = '';
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewWrapper.innerHTML = `<div class="flex items-center w-full"><img src="${e.target.result}" class="w-16 h-16 object-cover rounded"><div class="ml-4 flex-1 text-left"><p class="font-semibold text-sm text-gray-800 truncate">${file.name}</p><p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p></div><button type="button" id="removePreviewBtn" class="ml-4 text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button></div>`;
+                reader.onload = (e) => {
+                    previewWrapper.innerHTML = `<div class="flex items-center w-full"><img src="${e.target.result}" class="w-16 h-16 object-cover rounded"><div class="ml-4 flex-1 text-left"><p class="font-semibold text-sm truncate">${file.name}</p><p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p></div><button type="button" id="removePreviewBtn" class="ml-4 text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button></div>`;
                     document.getElementById('removePreviewBtn').onclick = () => { fileUploadInput.value = ''; updateFilePreview(null); };
                 }
                 reader.readAsDataURL(file);
             } else {
                 previewWrapper.classList.add('hidden');
                 dropzonePlaceholder.classList.remove('hidden');
-                previewWrapper.innerHTML = '';
             }
         }
         function showInspectionDetails(inspection) {
-            document.getElementById('viewEquipmentName').textContent = inspection.equipment;
-            document.getElementById('viewInspectionDate').textContent = `Reported on: ${inspection.date}`;
-            document.getElementById('viewIssueDescription').textContent = inspection.issue;
-            const photoElement = document.getElementById('viewInspectionPhoto');
-            photoElement.src = inspection.photoUrl || '';
-            photoElement.style.display = inspection.photoUrl ? 'block' : 'none';
+            const { viewEquipmentName, viewInspectionDate, viewIssueDescription, viewInspectionPhoto, deleteInspectionBtn } = allDOMElements;
+            viewEquipmentName.textContent = inspection.equipment;
+            viewInspectionDate.textContent = `Reported on: ${inspection.date}`;
+            viewIssueDescription.textContent = inspection.issue;
+            viewInspectionPhoto.src = inspection.photoUrl || '';
+            viewInspectionPhoto.style.display = inspection.photoUrl ? 'block' : 'none';
             deleteInspectionBtn.dataset.id = inspection.id;
-            openViewModal();
-        }
-        function openViewModal() {
-            viewInspectionModal.classList.remove('hidden');
-            setTimeout(() => { viewModalContent.classList.remove('scale-95', 'opacity-0'); viewModalContent.classList.add('scale-100', 'opacity-100'); }, 10);
-        }
-        function closeViewModal() {
-            viewModalContent.classList.remove('scale-100', 'opacity-100');
-            viewModalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { viewInspectionModal.classList.add('hidden'); }, 200);
+            openModal(allDOMElements.viewInspectionModal);
         }
         function showMessage(message) {
+            const { messageText, messageBox } = allDOMElements;
             messageText.textContent = message;
             messageBox.classList.remove('hidden');
             setTimeout(() => messageBox.classList.remove('opacity-0'), 10);
